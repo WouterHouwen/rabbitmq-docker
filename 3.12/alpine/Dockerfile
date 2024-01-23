@@ -33,10 +33,10 @@ ENV OPENSSL_SOURCE_SHA256="840af5366ab9b522bde525826be3ef0fb0af81c6a9ebd84caa600
 # https://www.openssl.org/source/
 ENV OPENSSL_PGP_KEY_IDS="0x8657ABB260F056B1E5190839D9C4D26D0E604491 0xB7C1C14360F353A36862E4D5231C84CDDCC69C45 0xC1F33DD8CE1D4CC613AF14DA9195C48241FBF7DD 0x95A9908DDFA16830BE9FB9003D30A3A9FF1360DC 0x7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 0xA21FAB74B0088AA361152586B8EF1A6BA9DA2D5C 0xE5E52560DD91C556DDBDA5D02064C53641C25E5D 0xEFC0A467D613CB83C7ED6D30D894E2CE8B3D79F5"
 
-ENV OTP_VERSION 25.3.2.8
+ENV OTP_VERSION 26.2.1
 # TODO add PGP checking when the feature will be added to Erlang/OTP's build system
 # https://erlang.org/pipermail/erlang-questions/2019-January/097067.html
-ENV OTP_SOURCE_SHA256="9424d7713b361c8a24690515acbd7e0fd37b67d54cad1e1e4af146eae0e335d3"
+ENV OTP_SOURCE_SHA256="80d66bafbae409481a4e1badcb4a6275b07a8e9af82980c08d7a8add483232a9"
 
 # install openssl & erlang to a path that isn't auto-checked for libs to prevent accidental use by system packages
 ENV ERLANG_INSTALL_PATH_PREFIX /opt/erlang
@@ -262,6 +262,9 @@ ENV RABBITMQ_HOME /opt/rabbitmq
 # Add RabbitMQ to PATH
 ENV PATH $RABBITMQ_HOME/sbin:$PATH
 
+# Copy zip
+COPY rabbitmq-server-generic-unix-bae3367.tar.xz /usr/local/src/rabbitmq-3.12.12.tar.xz
+
 # Install RabbitMQ
 RUN set -eux; \
 # /usr/local/src doesn't exist in Alpine by default
@@ -272,15 +275,10 @@ RUN set -eux; \
 		xz \
 	; \
 	\
-	RABBITMQ_SOURCE_URL="https://github.com/rabbitmq/rabbitmq-server/releases/download/v$RABBITMQ_VERSION/rabbitmq-server-generic-unix-latest-toolchain-$RABBITMQ_VERSION.tar.xz"; \
 	RABBITMQ_PATH="/usr/local/src/rabbitmq-$RABBITMQ_VERSION"; \
-	\
-	wget --output-document "$RABBITMQ_PATH.tar.xz.asc" "$RABBITMQ_SOURCE_URL.asc"; \
-	wget --output-document "$RABBITMQ_PATH.tar.xz" "$RABBITMQ_SOURCE_URL"; \
 	\
 	export GNUPGHOME="$(mktemp -d)"; \
 	gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$RABBITMQ_PGP_KEY_ID"; \
-	gpg --batch --verify "$RABBITMQ_PATH.tar.xz.asc" "$RABBITMQ_PATH.tar.xz"; \
 	gpgconf --kill all; \
 	rm -rf "$GNUPGHOME"; \
 	\
