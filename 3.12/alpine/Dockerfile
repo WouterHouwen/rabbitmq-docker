@@ -263,7 +263,7 @@ ENV RABBITMQ_HOME /opt/rabbitmq
 ENV PATH $RABBITMQ_HOME/sbin:$PATH
 
 # Copy zip
-COPY rabbitmq-server-generic-unix-bae3367.tar.xz /usr/local/src/rabbitmq-3.12.12.tar.xz
+COPY rabbitmq-server-generic-unix-3.12.12+dirty.tar.xz /usr/local/src/rabbitmq-3.12.12.tar.xz
 
 # Install RabbitMQ
 RUN set -eux; \
